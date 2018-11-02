@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.js"></script>
+  <script src="L.PixiOverlay.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.2/pixi.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.4/leaflet.css">
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+    }
+    #map{
+      width:100vw;
+      height:100vh;
+    }
+  </style>
+
+  <title>Pixi.js overlay very basic demo</title>
+</head>
+
+<body>
+
+  <div id="map"></div>
+
+  <script type="text/javascript">
+    // create leaflet map
+    var map = L.map('map').setView([30.7736012, 182.1794325], 3);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // create pixi and pixiJSOverlay
+    var width = document.getElementById("map").clientWidth;
+    var height = document.getElementById("map").clientHeight;
+    var pixiApp = new PIXI.Application( width, height, { transparent: true, antialias:true });
+    L.pixiJSOverlay(pixiApp, {padding: 0}).addTo(map);
+
+    // make coords using leaflet original function
+    var startLatLng = new L.LatLng(35.698224, 140.632130);
+    var endLatLng = new L.LatLng(37.456482, 237.520019);
+
+    // draw graphics on map
+    var graphic = new PIXI.Graphics();
+    pixiApp.stage.addChild(graphic);
+
+    function draw(){
+      var startPoint = map.latLngToLayerPoint(startLatLng);
+      var endPoint = map.latLngToLayerPoint(endLatLng);
+
+      graphic.clear();    
+      graphic.lineStyle(3 ,0xff0000);
+      graphic.moveTo(startPoint.x, startPoint.y);
+      graphic.lineTo(endPoint.x, endPoint.y);
+
+      pixiApp.render();
+    }
+
+    draw();
+
+    // need redraw on map zoomend
+    map.on("zoomend", draw);
+  </script>
+
+</body>
+
+</html>
